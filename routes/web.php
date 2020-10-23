@@ -16,3 +16,6 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::get('/articles', 'App\Http\Controllers\ArticleController@index')->name('article.list');      // 一覧表示ページ
+Route::get('/article/{id}', 'App\Http\Controllers\ArticleController@show')->name('article.show');   // 詳細表示ページ

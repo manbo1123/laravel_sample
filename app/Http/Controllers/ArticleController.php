@@ -14,7 +14,9 @@ class ArticleController extends Controller
      */
     public function index()
     {
-        //
+        $message = 'コントローラーからindexビューに渡せるかの確認';
+        $articles = Article::all();
+        return view('index', ['message' => $message, 'articles' => $articles]);
     }
 
     /**
@@ -44,9 +46,11 @@ class ArticleController extends Controller
      * @param  \App\Models\Article  $article
      * @return \Illuminate\Http\Response
      */
-    public function show(Article $article)
+    public function show(Request $request, $id, Article $article)
     {
-        //
+        $message = 'コントローラーからshowビューに渡せるかの確認';
+        $article = Article::find($id);
+        return view('show', ['message' => $message, 'article' => $article]);
     }
 
     /**
