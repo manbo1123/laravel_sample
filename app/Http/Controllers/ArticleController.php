@@ -12,10 +12,16 @@ class ArticleController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
-    {
-        $message = 'コントローラーからindexビューに渡せるかの確認';
-        $articles = Article::all();
+    public function index(Request $request){   // GETメソッドで受け取ったデータは、引数に指定した変数$requestで取得できる
+        //$message = 'コントローラーからindexビューに渡せるかの確認';
+        if ($request->filled('keyword')) {   // データの有無で条件分岐
+            $keyword = $request->input('keyword');
+            $message = '検索キーワード: '.$keyword;
+            $articles = Article::where('content', 'like', '%'.$keyword.'%')->get();
+        }else{   // 検索キーワードが入力されてない場合
+            $message = "検索キーワードを入力してください。";
+            $articles = Article::all();
+        }
         return view('index', ['message' => $message, 'articles' => $articles]);
     }
 
@@ -26,11 +32,8 @@ class ArticleController extends Controller
      */
     public function create(Request $request)
     {
-        $article = new Article();
-        $article->content = "投稿機能の確認";
-        $article->user_name = "投稿者の確認";
-        $article->save();
-        return redirect("/articles");
+        $message = '投稿フォーム： ';
+        return view('new', ['message'=>$message]);
     }
 
     /**
@@ -41,7 +44,12 @@ class ArticleController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $article = new Article();
+        $article->content = $request->content;      // 投稿内容
+        $article->user_name = $request->user_name;  // 投稿者名
+        $article->save();                           // 保存
+        // レコード保存後に、詳細表示ページへデータを渡してリダイレクト
+        return redirect()->route('article.show', ['id' => $article->id]);
     }
 
     /**
@@ -52,7 +60,7 @@ class ArticleController extends Controller
      */
     public function show(Request $request, $id, Article $article)
     {
-        $message = 'コントローラーからshowビューに渡せるかの確認';
+        $message = '記事の内容： ';
         $article = Article::find($id);
         return view('show', ['message' => $message, 'article' => $article]);
     }
@@ -63,9 +71,12 @@ class ArticleController extends Controller
      * @param  \App\Models\Article  $article
      * @return \Illuminate\Http\Response
      */
-    public function edit(Article $article)
+    public function edit(Request $request, $id, Article $article)
     {
-        //
+        $message = '記事の編集： '.$id;    // 表示用
+        $article = Article::find($id);  // 編集するレコードをid情報から取得
+        // 編集ページに、$message と $articleを渡して表示させる
+        return view('edit', ['message'=>$message, 'article'=>$article]);
     }
 
     /**
@@ -75,9 +86,13 @@ class ArticleController extends Controller
      * @param  \App\Models\Article  $article
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Article $article)
+    public function update(Request $request, $id, Article $article)
     {
-        //
+        $article = Article::find($id);
+        $article->content = $request->content;
+        $article->user_name = $request->user_name;
+        $article->save();
+        return redirect()->route('article.show', ['id' => $article->id]);
     }
 
     /**

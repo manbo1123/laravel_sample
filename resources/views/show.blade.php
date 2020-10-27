@@ -7,7 +7,8 @@
   <p>{{ $article -> user_name }}</p>
   <p>{{ $article -> created_at }}</p>
   <p>
-    <a href = {{ route('article.list') }} class="btn btn-outline-secondary">戻る</a>
+    <a href='{{ route("article.edit", ["id"=> $article->id]) }}' class="btn btn-secondary">編集</a>
+    <a href = '{{ route("article.list") }}' class="btn btn-outline-secondary">戻る</a>
   </p>
   <div>
     {{ Form::open(['method' => 'delete', 'route' => ['article.delete', $article -> id]]) }}
